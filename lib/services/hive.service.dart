@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:core';
 import 'dart:io';
 // ignore: depend_on_referenced_packages
 import 'package:flutter/material.dart';
@@ -14,10 +15,25 @@ class CollectionNameDoesNotExist extends Error {}
 
 class HiveService extends ChangeNotifier {
   List<String> boxesName = [];
-  Map<dynamic, dynamic> datas = {};
+  Map<dynamic, dynamic> currentData = {};
+  String currentCollectionName = "";
+  int currentDataCount = 0;
+  String databasePath = "";
 
   HiveService(folder) {
     load(folder);
+  }
+
+  void refreshDirectory() {
+    if (databasePath.isNotEmpty) {
+      load(databasePath);
+    }
+  }
+
+  void refreshCollection() {
+    if (currentCollectionName.isNotEmpty) {
+      getAll(currentCollectionName);
+    }
   }
 
   void load(folder) {
@@ -25,6 +41,7 @@ class HiveService extends ChangeNotifier {
     if (!directory.existsSync()) {
       throw NotADirectory();
     }
+    databasePath = directory.path;
     boxesName = directory
         .listSync()
         .where((file) => file.toString().contains(".hive") && file is File)
@@ -38,7 +55,7 @@ class HiveService extends ChangeNotifier {
   }
 
   Future<Box> _openBox(String collection) async {
-    if (!boxesName.contains(collection)) {
+    if (!await Hive.boxExists(collection)) {
       throw CollectionNameDoesNotExist();
     }
     if (Hive.isBoxOpen(collection)) {
@@ -47,7 +64,7 @@ class HiveService extends ChangeNotifier {
     return Hive.openBox(collection);
   }
 
-  Map<dynamic, dynamic> tryJsonDecode(dynamic object) {
+  Map<dynamic, dynamic> _tryJsonDecode(dynamic object) {
     try {
       return json.decode(object) as Map<dynamic, dynamic>;
     } catch (e) {
@@ -57,9 +74,11 @@ class HiveService extends ChangeNotifier {
 
   Future<Map<dynamic, dynamic>> getAll(String collection) async {
     Box box = await _openBox(collection);
-    datas =
-        box.toMap().map((key, value) => MapEntry(key, tryJsonDecode(value)));
+    currentData =
+        box.toMap().map((key, value) => MapEntry(key, _tryJsonDecode(value)));
     notifyListeners();
-    return datas;
+    currentDataCount = box.length;
+    currentCollectionName = collection;
+    return currentData;
   }
 }

@@ -1,11 +1,11 @@
 import 'dart:convert';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_json_viewer/flutter_json_viewer.dart';
 import 'package:hive_viewer/services/hive.service.dart';
-import 'package:hive_viewer/widgets/header.widget.dart';
 import 'package:provider/provider.dart';
 
 class SideSheetWidget extends StatelessWidget {
@@ -24,23 +24,55 @@ class SideSheetWidget extends StatelessWidget {
           Row(
             children: [
               IconButton(
+                  onPressed: () async {
+                    String? selectedDirectory =
+                        await FilePicker.platform.getDirectoryPath();
+                    if (selectedDirectory != null) {
+                      context.read<HiveService>().load(selectedDirectory);
+                    }
+                  },
+                  icon: const Icon(Icons.folder)),
+              Text(context.read<HiveService>().databasePath),
+            ],
+          ),
+          Row(
+            children: [
+              IconButton(
                 icon: const Icon(Icons.refresh),
-                onPressed: () => null,
+                onPressed: () => context.read<HiveService>().refreshDirectory(),
               ),
-              Text("<nombre de box>"),
-              Text("Boxes"),
+              Row(
+                children: [
+                  Text(
+                    boxesName.length.toString(),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(" box${boxesName.isNotEmpty ? "es" : ""}")
+                ],
+              ),
             ],
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: boxesName.length,
-              itemBuilder: (context, index) {
-                final item = boxesName[index];
-                return GestureDetector(
-                  child: Text(item),
-                  onTap: () => context.read<HiveService>().getAll(item),
-                );
-              },
+            child: SingleChildScrollView(
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: boxesName.length,
+                itemBuilder: (context, index) {
+                  final item = boxesName[index];
+                  return MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Text(item,
+                            style:
+                                const TextStyle(fontWeight: FontWeight.bold)),
+                      ),
+                      onTap: () => context.read<HiveService>().getAll(item),
+                    ),
+                  );
+                },
+              ),
             ),
           )
         ],
