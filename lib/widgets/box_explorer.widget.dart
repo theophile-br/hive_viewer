@@ -39,7 +39,11 @@ class BoxExplorerWidget extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(right: 16.0),
-                  child: Text("HiveViewer $version"),
+                  child: Text(
+                    "HiveViewer $version",
+                    style:
+                        const TextStyle(color: Color.fromRGBO(33, 42, 62, 1)),
+                  ),
                 ),
               ],
             ),
@@ -55,24 +59,40 @@ class BoxExplorerWidget extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      currentBoxName,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      currentBoxName.toUpperCase(),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromRGBO(57, 72, 103, 1)),
                     ),
                     const Text(" - "),
                     Text(
                       currentDataCount.toString(),
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromRGBO(33, 42, 62, 1)),
                     ),
-                    Text(" document${currentDataCount != 0 ? "s" : ""}")
+                    Text(
+                      " document${currentDataCount != 0 ? "s" : ""}",
+                      style:
+                          const TextStyle(color: Color.fromRGBO(33, 42, 62, 1)),
+                    )
                   ],
                 ),
                 Padding(
                   padding: EdgeInsets.all(5),
                   child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Color.fromRGBO(33, 42, 62, 1),
+                      ),
                       onPressed: () =>
                           context.read<HiveService>().refreshCollection(),
                       child: Row(
-                        children: const [Icon(Icons.refresh), Text("Refresh")],
+                        children: const [
+                          Icon(
+                            Icons.refresh,
+                          ),
+                          Text("Refresh")
+                        ],
                       )),
                 )
               ],

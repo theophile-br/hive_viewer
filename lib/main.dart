@@ -44,6 +44,7 @@ class MyApp extends StatelessWidget {
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
         primarySwatch: Colors.blue,
+        backgroundColor: const Color.fromRGBO(155, 164, 181, 1),
       ),
       home: Scaffold(body: HomeView()),
     );
