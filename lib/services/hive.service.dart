@@ -4,6 +4,7 @@ import 'dart:io';
 // ignore: depend_on_referenced_packages
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 import 'package:hive/hive.dart';
 
@@ -15,7 +16,7 @@ class CollectionNameDoesNotExist extends Error {}
 
 class HiveService extends ChangeNotifier {
   List<String> boxesName = [];
-  Map<dynamic, dynamic> currentData = {};
+  Map<String, dynamic> currentData = {};
   String currentCollectionName = "";
   int currentDataCount = 0;
   String databasePath = "";
@@ -36,7 +37,7 @@ class HiveService extends ChangeNotifier {
     }
   }
 
-  void load(folder) {
+  void load(folder) async {
     Directory directory = Directory(folder);
     if (!directory.existsSync()) {
       throw NotADirectory();
@@ -50,7 +51,9 @@ class HiveService extends ChangeNotifier {
     if (boxesName.isEmpty) {
       throw HiveFileNotFoundInDirectory();
     }
-    Hive.init(directory.path);
+    final appDataDirectory = await getApplicationDocumentsDirectory();
+    copyDirectory(directory, appDataDirectory);
+    Hive.init(appDataDirectory.path);
     notifyListeners();
   }
 
@@ -81,4 +84,18 @@ class HiveService extends ChangeNotifier {
     currentCollectionName = collection;
     return currentData;
   }
+
+  void copyDirectory(Directory source, Directory destination) =>
+      source.listSync(recursive: false).forEach((var entity) {
+        if (entity is Directory) {
+          var newDirectory = Directory(
+              p.join(destination.absolute.path, p.basename(entity.path)));
+
+          newDirectory.createSync();
+
+          copyDirectory(entity.absolute, newDirectory);
+        } else if (entity is File) {
+          entity.copySync(p.join(destination.path, p.basename(entity.path)));
+        }
+      });
 }

@@ -7,6 +7,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_json_viewer/flutter_json_viewer.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_viewer/services/hive.service.dart';
+import 'package:hive_viewer/services/app.service.dart';
 import 'package:provider/provider.dart';
 
 class BoxExplorerWidget extends StatelessWidget {
@@ -14,11 +15,9 @@ class BoxExplorerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final d = context.select(
+    final datas = context.select(
       (HiveService value) => value.currentData,
     );
-
-    final datas = jsonEncode(d);
 
     final currentDataCount = context.select(
       (HiveService value) => value.currentDataCount,
@@ -28,6 +27,8 @@ class BoxExplorerWidget extends StatelessWidget {
       (HiveService value) => value.currentCollectionName,
     );
 
+    final version = context.read<AppService>().packageInfo.version;
+
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.only(left: 30.0),
@@ -35,10 +36,10 @@ class BoxExplorerWidget extends StatelessWidget {
           children: [
             Row(
               textDirection: TextDirection.rtl,
-              children: const [
+              children: [
                 Padding(
-                  padding: EdgeInsets.only(right: 16.0),
-                  child: Text("HiveViewer 1.0.0"),
+                  padding: const EdgeInsets.only(right: 16.0),
+                  child: Text("HiveViewer $version"),
                 ),
               ],
             ),
@@ -77,8 +78,16 @@ class BoxExplorerWidget extends StatelessWidget {
               ],
             ),
             Expanded(
-                child: SingleChildScrollView(
-                    child: JsonViewer(jsonDecode(datas)))),
+              child: SingleChildScrollView(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: datas.entries.length,
+                  itemBuilder: (context, index) => JsonViewer(Map.fromEntries({
+                    datas.entries.elementAt(index),
+                  })),
+                ),
+              ),
+            ),
           ],
         ),
       ),
