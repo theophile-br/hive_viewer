@@ -1,10 +1,5 @@
-import 'dart:convert';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter_json_viewer/flutter_json_viewer.dart';
 import 'package:hive_viewer/services/hive.service.dart';
 import 'package:provider/provider.dart';
 
@@ -19,8 +14,7 @@ class SideSheetWidget extends StatelessWidget {
 
     return Container(
       color: Color.fromRGBO(33, 42, 62, 1),
-      // color: Color.fromRGBO(57, 72, 103, 1),
-      width: 200,
+      width: 300,
       child: Column(
         children: [
           Row(
@@ -67,7 +61,9 @@ class SideSheetWidget extends StatelessWidget {
           ),
           Expanded(
             child: SingleChildScrollView(
-              child: ListView.builder(
+              child: ListView.separated(
+                separatorBuilder: (context, index) =>
+                    Divider(color: Color.fromRGBO(57, 72, 103, 0.8)),
                 shrinkWrap: true,
                 itemCount: boxesName.length,
                 itemBuilder: (context, index) {

@@ -32,6 +32,7 @@ class HiveService extends ChangeNotifier {
   }
 
   void refreshCollection() {
+    refreshCollection();
     if (currentCollectionName.isNotEmpty) {
       getAll(currentCollectionName);
     }
@@ -51,6 +52,8 @@ class HiveService extends ChangeNotifier {
     if (boxesName.isEmpty) {
       throw HiveFileNotFoundInDirectory();
     }
+    await Hive.deleteFromDisk();
+    await Hive.close();
     final appDataDirectory = await getApplicationDocumentsDirectory();
     copyDirectory(directory, appDataDirectory);
     Hive.init(appDataDirectory.path);
@@ -77,11 +80,12 @@ class HiveService extends ChangeNotifier {
 
   Future<Map<dynamic, dynamic>> getAll(String collection) async {
     Box box = await _openBox(collection);
-    currentData =
-        box.toMap().map((key, value) => MapEntry(key, _tryJsonDecode(value)));
-    notifyListeners();
+    currentData = box
+        .toMap()
+        .map((key, value) => MapEntry(key.toString(), _tryJsonDecode(value)));
     currentDataCount = box.length;
     currentCollectionName = collection;
+    notifyListeners();
     return currentData;
   }
 
