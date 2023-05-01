@@ -38,7 +38,6 @@ class JsonObjectViewer extends StatefulWidget {
 
 class JsonObjectViewerState extends State<JsonObjectViewer> {
   Map<String, bool> openFlag = Map();
-  bool expand = false;
 
   @override
   Widget build(BuildContext context) {
@@ -49,29 +48,18 @@ class JsonObjectViewerState extends State<JsonObjectViewer> {
             crossAxisAlignment: CrossAxisAlignment.start, children: _getList()),
       );
     }
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      IconButton(
-          onPressed: _toggleExpandAll,
-          icon: Icon(
-            expand ? Icons.unfold_less : Icons.unfold_more,
-            size: 16.0,
-          )),
-      ..._getList(),
-    ]);
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children:_getList());
   }
 
-  _toggleExpandAll() {
-    setState(() {
-      expand = !expand;
-      openFlag.updateAll((key, value) => expand);
-    });
-  }
 
   _getList() {
     List<Widget> list = [];
     for (MapEntry entry in widget.jsonObj.entries) {
       bool ex = isExtensible(entry.value);
       bool ink = isInkWell(entry.value);
+      if(ex && ink && openFlag[entry.key] == null) {
+        openFlag[entry.key] = true;
+      }
       list.add(Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -112,6 +100,7 @@ class JsonObjectViewerState extends State<JsonObjectViewer> {
         list.add(getContentWidget(entry.value));
       }
     }
+
     return list;
   }
 
@@ -276,6 +265,9 @@ class _JsonArrayViewerState extends State<JsonArrayViewer> {
     for (dynamic content in widget.jsonArray) {
       bool ex = JsonObjectViewerState.isExtensible(content);
       bool ink = JsonObjectViewerState.isInkWell(content);
+      if(ex && ink && openFlag[i] == null) {
+        openFlag[i] = true;
+      }
       list.add(Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[

@@ -25,25 +25,26 @@ class HiveService extends ChangeNotifier {
     load(folder);
   }
 
-  void refreshDirectory() {
+  void refreshDirectory({bool notify = true}) {
     if (databasePath.isNotEmpty) {
-      load(databasePath);
+      load(databasePath, notify: notify);
     }
   }
 
   void refreshCollection() {
-    refreshCollection();
+    refreshDirectory(notify: false);
     if (currentCollectionName.isNotEmpty) {
-      getAll(currentCollectionName);
+      getAll(currentCollectionName, notify: false);
     }
+    notifyListeners();
   }
 
-  void load(folder) async {
+  void load(folder, { bool notify = true}) async {
     Directory directory = Directory(folder);
     if (!directory.existsSync()) {
       throw NotADirectory();
     }
-    databasePath = directory.path;
+    databasePath = directory.absolute.path;
     boxesName = directory
         .listSync()
         .where((file) => file.toString().contains(".hive") && file is File)
@@ -52,12 +53,13 @@ class HiveService extends ChangeNotifier {
     if (boxesName.isEmpty) {
       throw HiveFileNotFoundInDirectory();
     }
-    await Hive.deleteFromDisk();
     await Hive.close();
-    final appDataDirectory = await getApplicationDocumentsDirectory();
-    copyDirectory(directory, appDataDirectory);
+    await Hive.deleteFromDisk();
+    final Directory appDataDirectory = await getApplicationSupportDirectory();
+    appDataDirectory.createSync(recursive: true);
+    copyDirectory(directory,appDataDirectory);
     Hive.init(appDataDirectory.path);
-    notifyListeners();
+    notify ? notifyListeners() : null;
   }
 
   Future<Box> _openBox(String collection) async {
@@ -72,20 +74,20 @@ class HiveService extends ChangeNotifier {
 
   Map<dynamic, dynamic> _tryJsonDecode(dynamic object) {
     try {
-      return json.decode(object) as Map<dynamic, dynamic>;
-    } catch (e) {
+      return json.decode(object);
+    } catch (_) {
       return object;
     }
   }
 
-  Future<Map<dynamic, dynamic>> getAll(String collection) async {
+  Future<Map<dynamic, dynamic>> getAll(String collection, { bool notify = true}) async {
     Box box = await _openBox(collection);
     currentData = box
         .toMap()
         .map((key, value) => MapEntry(key.toString(), _tryJsonDecode(value)));
     currentDataCount = box.length;
     currentCollectionName = collection;
-    notifyListeners();
+    notify ? notifyListeners() : null;
     return currentData;
   }
 
@@ -102,4 +104,5 @@ class HiveService extends ChangeNotifier {
           entity.copySync(p.join(destination.path, p.basename(entity.path)));
         }
       });
+
 }

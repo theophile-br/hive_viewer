@@ -31,9 +31,12 @@ class SideSheetWidget extends StatelessWidget {
                   icon: const Icon(
                     Icons.folder,
                   )),
-              Text(
-                context.read<HiveService>().databasePath,
-                style: const TextStyle(color: Color.fromRGBO(241, 246, 249, 1)),
+              Tooltip(
+                message: context.read<HiveService>().databasePath,
+                child: Text(
+                  '...${context.read<HiveService>().databasePath.substring(context.read<HiveService>().databasePath.length - 20, context.read<HiveService>().databasePath.length)}',
+                  style: const TextStyle(color: Color.fromRGBO(241, 246, 249, 1)),
+                ),
               ),
             ],
           ),
