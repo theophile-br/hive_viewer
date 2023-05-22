@@ -74,9 +74,9 @@ class HiveService extends ChangeNotifier {
 
   Map<dynamic, dynamic> _tryJsonDecode(dynamic object) {
     try {
-      return json.decode(object);
+      return jsonDecode(object);
     } catch (_) {
-      return object;
+      return jsonDecode(jsonEncode(object));
     }
   }
 
