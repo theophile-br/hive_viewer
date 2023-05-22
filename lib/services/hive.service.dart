@@ -54,8 +54,8 @@ class HiveService extends ChangeNotifier {
       throw HiveFileNotFoundInDirectory();
     }
     await Hive.close();
-    await Hive.deleteFromDisk();
     final Directory appDataDirectory = await getApplicationSupportDirectory();
+    appDataDirectory.deleteSync(recursive: true);
     appDataDirectory.createSync(recursive: true);
     copyDirectory(directory,appDataDirectory);
     Hive.init(appDataDirectory.path);
