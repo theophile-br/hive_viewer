@@ -1,12 +1,6 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_viewer/services/hive.service.dart';
 import 'package:hive_viewer/services/app.service.dart';
+import 'package:hive_viewer/services/hive.service.dart';
 import 'package:provider/provider.dart';
 
 import '../json_viewer.dart';
@@ -17,11 +11,15 @@ class BoxExplorerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final datas = context.select(
-      (HiveService value) => value.currentData,
+      (HiveService value) => value.filteredCurrentData,
     );
 
     final currentDataCount = context.select(
       (HiveService value) => value.currentDataCount,
+    );
+
+    final filteredCurrentDataCount = context.select(
+      (HiveService value) => value.filteredCurrentDataCount,
     );
 
     final currentBoxName = context.select(
@@ -80,15 +78,33 @@ class BoxExplorerWidget extends StatelessWidget {
                     " document${currentDataCount != 0 ? "s" : ""}",
                     style:
                         const TextStyle(color: Color.fromRGBO(33, 42, 62, 1)),
-                  )
+                  ),
+                  if (filteredCurrentDataCount != 0) ...[
+                    const Text(
+                      "( ",
+                      style:
+                          const TextStyle(color: Color.fromRGBO(33, 42, 62, 1)),
+                    ),
+                    Text(
+                      filteredCurrentDataCount.toString(),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromRGBO(33, 42, 62, 1)),
+                    ),
+                    const Text(
+                      " filtered )",
+                      style:
+                          const TextStyle(color: Color.fromRGBO(33, 42, 62, 1)),
+                    ),
+                  ],
                 ],
               ),
               Padding(
                 padding: EdgeInsets.all(5),
                 child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: Color.fromRGBO(33, 42, 62, 1),
-                    ),
+                        // primary: Color.fromRGBO(33, 42, 62, 1),
+                        ),
                     onPressed: () =>
                         context.read<HiveService>().refreshCollection(),
                     child: Row(
@@ -101,6 +117,18 @@ class BoxExplorerWidget extends StatelessWidget {
                     )),
               )
             ],
+          ),
+          TextField(
+            onChanged: (text) {
+              context.read<HiveService>().dataFiltering(text);
+            },
+            style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Color.fromRGBO(33, 42, 62, 1)),
+            decoration: const InputDecoration(
+                prefixIconColor: Color.fromRGBO(33, 42, 62, 1),
+                border: InputBorder.none,
+                prefixIcon: Icon(Icons.search)),
           ),
           const Divider(color: Color.fromRGBO(33, 42, 62, 0.5)),
           Expanded(

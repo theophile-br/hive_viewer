@@ -9,7 +9,7 @@ class SideSheetWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<String> boxesName = context.select(
-      (HiveService value) => value.boxesName,
+      (HiveService value) => value.filteredBoxesName,
     );
 
     return Container(
@@ -35,7 +35,8 @@ class SideSheetWidget extends StatelessWidget {
                 message: context.read<HiveService>().databasePath,
                 child: Text(
                   '...${context.read<HiveService>().databasePath.substring(context.read<HiveService>().databasePath.length - 20, context.read<HiveService>().databasePath.length)}',
-                  style: const TextStyle(color: Color.fromRGBO(241, 246, 249, 1)),
+                  style:
+                      const TextStyle(color: Color.fromRGBO(241, 246, 249, 1)),
                 ),
               ),
             ],
@@ -62,11 +63,23 @@ class SideSheetWidget extends StatelessWidget {
               ),
             ],
           ),
+          TextField(
+            onChanged: (text) {
+              context.read<HiveService>().boxFiltering(text);
+            },
+            style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Color.fromRGBO(241, 246, 249, 1)),
+            decoration: const InputDecoration(
+                prefixIconColor: Color.fromRGBO(241, 246, 249, 1),
+                border: InputBorder.none,
+                prefixIcon: Icon(Icons.search)),
+          ),
           Expanded(
             child: SingleChildScrollView(
               child: ListView.separated(
                 separatorBuilder: (context, index) =>
-                    Divider(color: Color.fromRGBO(57, 72, 103, 0.8)),
+                    const Divider(color: Color.fromRGBO(57, 72, 103, 0.8)),
                 shrinkWrap: true,
                 itemCount: boxesName.length,
                 itemBuilder: (context, index) {
