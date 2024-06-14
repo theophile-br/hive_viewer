@@ -94,9 +94,14 @@ class HiveService extends ChangeNotifier {
     if (!await Hive.boxExists(collection)) {
       throw CollectionNameDoesNotExist();
     }
-    if (Hive.isBoxOpen(collection)) {
-      return Hive.box(collection);
-    }
+    // if (Hive.isBoxOpen(collection)) {
+    //   return Hive.box(collection);
+    // }
+    // final encryptionKey =
+    //     base64Url.decode("LYPfFqQnD-d2koFC0YqW8frUFTmBKvQmDsdPAnPW4EE=");
+    //
+    // return Hive.openBox(collection,
+    //     encryptionCipher: HiveAesCipher(encryptionKey));
     return Hive.openBox(collection);
   }
 
@@ -118,6 +123,7 @@ class HiveService extends ChangeNotifier {
     filteredCurrentData = Map.from(currentData);
     filteredCurrentDataCount = filteredCurrentData.entries.length;
     currentCollectionName = collection;
+    await box.close();
     notify ? notifyListeners() : null;
     return currentData;
   }
