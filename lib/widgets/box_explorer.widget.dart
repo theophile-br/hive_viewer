@@ -59,20 +59,21 @@ class BoxExplorerWidget extends StatelessWidget {
                     child: Text(
                       currentBoxName.toUpperCase(),
                       style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromRGBO(57, 72, 103, 1)),
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromRGBO(57, 72, 103, 1),
+                      ),
                     ),
                   ),
                   const Text(
                     " - ",
-                    style:
-                        const TextStyle(color: Color.fromRGBO(33, 42, 62, 1)),
+                    style: TextStyle(color: Color.fromRGBO(33, 42, 62, 1)),
                   ),
                   Text(
                     currentDataCount.toString(),
                     style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromRGBO(33, 42, 62, 1)),
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromRGBO(33, 42, 62, 1),
+                    ),
                   ),
                   Text(
                     " document${currentDataCount != 0 ? "s" : ""}",
@@ -82,40 +83,40 @@ class BoxExplorerWidget extends StatelessWidget {
                   if (filteredCurrentDataCount != 0) ...[
                     const Text(
                       "( ",
-                      style:
-                          const TextStyle(color: Color.fromRGBO(33, 42, 62, 1)),
+                      style: TextStyle(color: Color.fromRGBO(33, 42, 62, 1)),
                     ),
                     Text(
                       filteredCurrentDataCount.toString(),
                       style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromRGBO(33, 42, 62, 1)),
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromRGBO(33, 42, 62, 1),
+                      ),
                     ),
                     const Text(
                       " filtered )",
-                      style:
-                          const TextStyle(color: Color.fromRGBO(33, 42, 62, 1)),
+                      style: TextStyle(color: Color.fromRGBO(33, 42, 62, 1)),
                     ),
                   ],
                 ],
               ),
               Padding(
-                padding: EdgeInsets.all(5),
+                padding: const EdgeInsets.all(5),
                 child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        // primary: Color.fromRGBO(33, 42, 62, 1),
-                        ),
-                    onPressed: () =>
-                        context.read<HiveService>().refreshCollection(),
-                    child: Row(
-                      children: const [
-                        Icon(
-                          Icons.refresh,
-                        ),
-                        Text("Refresh")
-                      ],
-                    )),
-              )
+                  style: ElevatedButton.styleFrom(
+                      // primary: Color.fromRGBO(33, 42, 62, 1),
+                      ),
+                  onPressed: () =>
+                      context.read<HiveService>().refreshCollection(),
+                  child: const Row(
+                    children: [
+                      Icon(
+                        Icons.refresh,
+                      ),
+                      Text("Refresh"),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
           TextField(
@@ -123,22 +124,24 @@ class BoxExplorerWidget extends StatelessWidget {
               context.read<HiveService>().dataFiltering(text);
             },
             style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Color.fromRGBO(33, 42, 62, 1)),
+              fontWeight: FontWeight.bold,
+              color: Color.fromRGBO(33, 42, 62, 1),
+            ),
             decoration: const InputDecoration(
-                prefixIconColor: Color.fromRGBO(33, 42, 62, 1),
-                border: InputBorder.none,
-                prefixIcon: Icon(Icons.search)),
+              prefixIconColor: Color.fromRGBO(33, 42, 62, 1),
+              border: InputBorder.none,
+              prefixIcon: Icon(Icons.search),
+            ),
           ),
           const Divider(color: Color.fromRGBO(33, 42, 62, 0.5)),
           Expanded(
             child: SingleChildScrollView(
               child: ListView.separated(
-                separatorBuilder: (context, index) => Divider(height: 1),
+                separatorBuilder: (context, index) => const Divider(height: 1),
                 shrinkWrap: true,
                 itemCount: datas.entries.length,
                 itemBuilder: (context, index) => Container(
-                  padding: EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
                   // decoration: BoxDecoration(
                   //   color: Colors.white,
                   //   borderRadius: const BorderRadius.all(Radius.circular(3)),
@@ -151,9 +154,11 @@ class BoxExplorerWidget extends StatelessWidget {
                   //     ),
                   //   ],
                   // ),
-                  child: JsonViewer(Map.fromEntries({
-                    datas.entries.elementAt(index),
-                  })),
+                  child: JsonViewer(
+                    Map.fromEntries({
+                      datas.entries.elementAt(index),
+                    }),
+                  ),
                 ),
               ),
             ),

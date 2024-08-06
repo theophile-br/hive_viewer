@@ -12,25 +12,28 @@ class SideSheetWidget extends StatelessWidget {
       (HiveService value) => value.filteredBoxesName,
     );
 
+    final hiveService = context.read<HiveService>();
+
     return Container(
-      color: Color.fromRGBO(33, 42, 62, 1),
+      color: const Color.fromRGBO(33, 42, 62, 1),
       width: 300,
       child: Column(
         children: [
           Row(
             children: [
               IconButton(
-                  color: Color.fromRGBO(241, 246, 249, 1),
-                  onPressed: () async {
-                    String? selectedDirectory =
-                        await FilePicker.platform.getDirectoryPath();
-                    if (selectedDirectory != null) {
-                      context.read<HiveService>().load(selectedDirectory);
-                    }
-                  },
-                  icon: const Icon(
-                    Icons.folder,
-                  )),
+                color: const Color.fromRGBO(241, 246, 249, 1),
+                onPressed: () async {
+                  String? selectedDirectory =
+                      await FilePicker.platform.getDirectoryPath();
+                  if (selectedDirectory != null) {
+                    hiveService.load(selectedDirectory);
+                  }
+                },
+                icon: const Icon(
+                  Icons.folder,
+                ),
+              ),
               Tooltip(
                 message: context.read<HiveService>().databasePath,
                 child: Text(
@@ -44,7 +47,7 @@ class SideSheetWidget extends StatelessWidget {
           Row(
             children: [
               IconButton(
-                color: Color.fromRGBO(241, 246, 249, 1),
+                color: const Color.fromRGBO(241, 246, 249, 1),
                 icon: const Icon(Icons.refresh),
                 onPressed: () => context.read<HiveService>().refreshDirectory(),
               ),
@@ -53,12 +56,16 @@ class SideSheetWidget extends StatelessWidget {
                   Text(
                     boxesName.length.toString(),
                     style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromRGBO(241, 246, 249, 1)),
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromRGBO(241, 246, 249, 1),
+                    ),
                   ),
-                  Text(" box${boxesName.isNotEmpty ? "es" : ""}",
-                      style: const TextStyle(
-                          color: Color.fromRGBO(241, 246, 249, 1)))
+                  Text(
+                    " box${boxesName.isNotEmpty ? "es" : ""}",
+                    style: const TextStyle(
+                      color: Color.fromRGBO(241, 246, 249, 1),
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -68,12 +75,14 @@ class SideSheetWidget extends StatelessWidget {
               context.read<HiveService>().boxFiltering(text);
             },
             style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Color.fromRGBO(241, 246, 249, 1)),
+              fontWeight: FontWeight.bold,
+              color: Color.fromRGBO(241, 246, 249, 1),
+            ),
             decoration: const InputDecoration(
-                prefixIconColor: Color.fromRGBO(241, 246, 249, 1),
-                border: InputBorder.none,
-                prefixIcon: Icon(Icons.search)),
+              prefixIconColor: Color.fromRGBO(241, 246, 249, 1),
+              border: InputBorder.none,
+              prefixIcon: Icon(Icons.search),
+            ),
           ),
           Expanded(
             child: SingleChildScrollView(
@@ -89,10 +98,13 @@ class SideSheetWidget extends StatelessWidget {
                     child: GestureDetector(
                       child: Padding(
                         padding: const EdgeInsets.all(5.0),
-                        child: Text(item,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromRGBO(241, 246, 249, 1))),
+                        child: Text(
+                          item,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromRGBO(241, 246, 249, 1),
+                          ),
+                        ),
                       ),
                       onTap: () => context.read<HiveService>().getAll(item),
                     ),
@@ -100,7 +112,7 @@ class SideSheetWidget extends StatelessWidget {
                 },
               ),
             ),
-          )
+          ),
         ],
       ),
     );

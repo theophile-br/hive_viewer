@@ -7,13 +7,13 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return const Column(
       children: [
         Expanded(
           child: Row(
-            children: const [SideSheetWidget(), BoxExplorerWidget()],
+            children: [SideSheetWidget(), BoxExplorerWidget()],
           ),
-        )
+        ),
       ],
     );
   }

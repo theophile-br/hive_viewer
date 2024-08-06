@@ -16,9 +16,11 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-            create: (_) => AppService(packageInfo: packageInfo)),
+          create: (_) => AppService(packageInfo: packageInfo),
+        ),
         ChangeNotifierProvider(
-            create: (_) => HiveService(p.join("test_resources", "hive_data"))),
+          create: (_) => HiveService(p.join("test_resources", "hive_data")),
+        ),
       ],
       child: const MyApp(),
     ),
@@ -31,7 +33,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       home: Scaffold(body: HomeView()),
