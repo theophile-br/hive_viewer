@@ -30,7 +30,10 @@ class JsonObjectViewer extends StatefulWidget {
   final Map<String, dynamic> jsonObj;
   final bool notRoot;
 
-  JsonObjectViewer(this.jsonObj, {this.notRoot: false});
+  const JsonObjectViewer(
+    this.jsonObj, {
+    this.notRoot = false,
+  });
 
   @override
   JsonObjectViewerState createState() => new JsonObjectViewerState();
@@ -48,16 +51,16 @@ class JsonObjectViewerState extends State<JsonObjectViewer> {
             crossAxisAlignment: CrossAxisAlignment.start, children: _getList()),
       );
     }
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children:_getList());
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.start, children: _getList());
   }
-
 
   _getList() {
     List<Widget> list = [];
     for (MapEntry entry in widget.jsonObj.entries) {
       bool ex = isExtensible(entry.value);
       bool ink = isInkWell(entry.value);
-      if(ex && ink && openFlag[entry.key] == null) {
+      if (ex && ink && openFlag[entry.key] == null) {
         openFlag[entry.key] = true;
       }
       list.add(Row(
@@ -231,7 +234,10 @@ class JsonArrayViewer extends StatefulWidget {
 
   final bool notRoot;
 
-  JsonArrayViewer(this.jsonArray, {this.notRoot: false});
+  JsonArrayViewer(
+    this.jsonArray, {
+    this.notRoot = false,
+  });
 
   @override
   _JsonArrayViewerState createState() => new _JsonArrayViewerState();
@@ -265,7 +271,7 @@ class _JsonArrayViewerState extends State<JsonArrayViewer> {
     for (dynamic content in widget.jsonArray) {
       bool ex = JsonObjectViewerState.isExtensible(content);
       bool ink = JsonObjectViewerState.isInkWell(content);
-      if(ex && ink && openFlag[i] == null) {
+      if (ex && ink && openFlag[i] == null) {
         openFlag[i] = true;
       }
       list.add(Row(
