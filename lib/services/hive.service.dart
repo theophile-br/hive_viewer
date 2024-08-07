@@ -44,8 +44,10 @@ class HiveService extends ChangeNotifier {
       filteredCurrentDataCount = filteredCurrentData.entries.length;
     }
     final filtered = currentData.entries
-        .where((obj) =>
-            jsonEncode(obj.value).toLowerCase().contains(text.toLowerCase()))
+        .where(
+          (obj) =>
+              jsonEncode(obj.value).toLowerCase().contains(text.toLowerCase()),
+        )
         .toList();
     filteredCurrentData = Map.fromEntries(filtered);
     filteredCurrentDataCount = filteredCurrentData.entries.length;
@@ -113,8 +115,10 @@ class HiveService extends ChangeNotifier {
     }
   }
 
-  Future<Map<dynamic, dynamic>> getAll(String collection,
-      {bool notify = true}) async {
+  Future<Map<dynamic, dynamic>> getAll(
+    String collection, {
+    bool notify = true,
+  }) async {
     Box box = await _openBox(collection);
     currentData = box
         .toMap()
@@ -132,7 +136,8 @@ class HiveService extends ChangeNotifier {
       source.listSync(recursive: false).forEach((var entity) {
         if (entity is Directory) {
           var newDirectory = Directory(
-              p.join(destination.absolute.path, p.basename(entity.path)));
+            p.join(destination.absolute.path, p.basename(entity.path)),
+          );
 
           newDirectory.createSync();
 
