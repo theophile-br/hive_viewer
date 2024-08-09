@@ -38,11 +38,14 @@ class HiveService {
     }
 
     final box = await Hive.openBox(name);
+    final boxSize = box.length;
+    final boxItems = _getHiveItems(box);
+    box.close();
 
     return HiveBox(
       name: name,
-      size: box.length,
-      items: _getHiveItems(box),
+      size: boxSize,
+      items: boxItems,
     );
   }
 

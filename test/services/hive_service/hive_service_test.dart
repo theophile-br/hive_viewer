@@ -10,11 +10,13 @@ class TestBox extends Mock implements Box {}
 
 late HiveService _hiveService;
 late String _assetsPath;
+late Directory _testCacheFolder;
 
 void main() {
   _setUpAll();
   _setUp();
   _testHiveService();
+  _tearDownAll();
 }
 
 void _setUpAll() {
@@ -25,18 +27,18 @@ void _setUpAll() {
 
 void _setUp() {
   setUp(() async {
-    final cacheFolder = Directory(
+    _testCacheFolder = Directory(
       p.join('test', 'services', 'hive_service', 'test_cache'),
     );
 
-    if (await (cacheFolder.exists())) {
-      await cacheFolder.delete(recursive: true);
+    if (await (_testCacheFolder.exists())) {
+      await _testCacheFolder.delete(recursive: true);
     }
 
-    await cacheFolder.create(recursive: true);
+    await _testCacheFolder.create(recursive: true);
 
     _hiveService = HiveService(
-      cacheFolder: cacheFolder,
+      cacheFolder: _testCacheFolder,
     );
   });
 }
@@ -134,5 +136,11 @@ void _testGetHiveBox() {
       expect(secondItem.values['name'], 'Loki');
       expect(secondItem.values['age'], 2);
     });
+  });
+}
+
+void _tearDownAll() {
+  tearDownAll(() async {
+    _testCacheFolder.deleteSync(recursive: true);
   });
 }
