@@ -15,12 +15,7 @@ class HiveService {
       _cachedBoxesNames = boxesNames;
 
   List<String>? _cachedBoxesNames;
-
-  final Directory _cacheFolder;
-
-  HiveService({required Directory cacheFolder}) : _cacheFolder = cacheFolder;
-
-  List<String> listBoxesNames() {
+  List<String> get boxesNames {
     final cachedBoxesNames = _cachedBoxesNames;
 
     if (cachedBoxesNames == null) {
@@ -30,8 +25,12 @@ class HiveService {
     return cachedBoxesNames;
   }
 
+  final Directory _cacheFolder;
+
+  HiveService({required Directory cacheFolder}) : _cacheFolder = cacheFolder;
+
   Future<HiveBox> getHiveBox(String name) async {
-    final boxesNames = listBoxesNames();
+    final boxesNames = this.boxesNames;
 
     if (!boxesNames.contains(name)) {
       throw BoxNotFoundException();

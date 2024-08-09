@@ -6,6 +6,8 @@ import 'package:hive_viewer/services/hive_service.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:path/path.dart' as p;
 
+import '../../path_utils.dart';
+
 class TestBox extends Mock implements Box {}
 
 late HiveService _hiveService;
@@ -21,7 +23,7 @@ void main() {
 
 void _setUpAll() {
   setUpAll(() {
-    _assetsPath = p.join('test', 'services', 'hive_service', 'assets');
+    _assetsPath = getTestAssetsPath();
   });
 }
 
@@ -55,14 +57,14 @@ void _testListBoxes() {
       _hiveService.cachedBoxesNames = null;
 
       expect(
-        () => _hiveService.listBoxesNames(),
+        () => _hiveService.boxesNames,
         throwsA(isA<BoxesNotLoadedException>()),
       );
     });
 
     test('returns the list of boxes names loaded', () {
       _hiveService.cachedBoxesNames = ['1', '2'];
-      expect(_hiveService.listBoxesNames(), ['1', '2']);
+      expect(_hiveService.boxesNames, ['1', '2']);
     });
   });
 }
@@ -91,7 +93,7 @@ void _testFetchBoxes() {
       final boxesDirectory = Directory(p.join(_assetsPath, 'boxes'));
       await _hiveService.fetchBoxes(boxesDirectory);
 
-      final boxesNames = _hiveService.listBoxesNames();
+      final boxesNames = _hiveService.boxesNames;
       expect(boxesNames.length, 3);
       expect(boxesNames[0], 'cats');
       expect(boxesNames[1], 'dogs');

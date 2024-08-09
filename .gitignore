@@ -49,3 +49,6 @@ app.*.map.json
 
 # Custom ignores
 /test/services/hive_service/test_cache/
+
+# Freezed
+*.freezed.dart
