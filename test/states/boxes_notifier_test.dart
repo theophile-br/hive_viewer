@@ -5,8 +5,6 @@ import 'package:hive_viewer/services/hive_service.dart';
 import 'package:hive_viewer/states/boxes_notifier.dart';
 import 'package:mocktail/mocktail.dart';
 
-import '../path_utils.dart';
-
 class MockHiveService extends Mock implements HiveService {}
 
 // Mocks
@@ -14,7 +12,6 @@ late HiveService _hiveService;
 
 // Variables
 late BoxesNotifier _boxesNotifier;
-late String _assetsPath;
 
 void main() {
   _setUpAll();
@@ -25,8 +22,6 @@ void main() {
 void _setUpAll() {
   setUpAll(() {
     _registerFallbacks();
-
-    _assetsPath = getTestAssetsPath();
   });
 }
 
