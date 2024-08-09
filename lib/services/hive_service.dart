@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
+import 'package:hive_viewer/hive_box.dart';
+import 'package:hive_viewer/hive_item.dart';
 import 'package:path/path.dart' as p;
 
 /// Service used to open / close boxes and memorize the last
@@ -27,14 +30,35 @@ class HiveService {
     return cachedBoxesNames;
   }
 
-  Future<Box> openBox(String name) async {
+  Future<HiveBox> getHiveBox(String name) async {
     final boxesNames = listBoxesNames();
 
     if (!boxesNames.contains(name)) {
       throw BoxNotFoundException();
     }
 
-    return Hive.openBox(name);
+    final box = await Hive.openBox(name);
+
+    return HiveBox(
+      name: name,
+      size: box.length,
+      items: _getHiveItems(box),
+    );
+  }
+
+  List<HiveItem> _getHiveItems(Box box) {
+    final List<HiveItem> hiveItems = [];
+
+    box.toMap().forEach(
+          (key, value) => hiveItems.add(
+            HiveItem(
+              name: key.toString(),
+              values: jsonDecode(jsonEncode(value)),
+            ),
+          ),
+        );
+
+    return hiveItems;
   }
 
   Future<void> fetchBoxes(Directory directory) async {

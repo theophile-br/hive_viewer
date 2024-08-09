@@ -24,11 +24,19 @@ void _setUpAll() {
 }
 
 void _setUp() {
-  setUp(() {
+  setUp(() async {
+    final cacheFolder = Directory(
+      p.join('test', 'services', 'hive_service', 'test_cache'),
+    );
+
+    if (await (cacheFolder.exists())) {
+      await cacheFolder.delete(recursive: true);
+    }
+
+    await cacheFolder.create(recursive: true);
+
     _hiveService = HiveService(
-      cacheFolder: Directory(
-        p.join('test', 'services', 'hive_service', 'test_cache'),
-      ),
+      cacheFolder: cacheFolder,
     );
   });
 }
@@ -36,7 +44,7 @@ void _setUp() {
 void _testHiveService() {
   _testListBoxes();
   _testFetchBoxes();
-  _testOpenBox();
+  _testGetHiveBox();
 }
 
 void _testListBoxes() {
@@ -90,12 +98,12 @@ void _testFetchBoxes() {
   });
 }
 
-void _testOpenBox() {
-  group('openBox()', () {
+void _testGetHiveBox() {
+  group('getHiveBox(_)', () {
     test('throws an exception if no boxes are loaded', () async {
       _hiveService.cachedBoxesNames = null;
       expectLater(
-        () async => await _hiveService.openBox('i_do_not_exist'),
+        () async => await _hiveService.getHiveBox('i_do_not_exist'),
         throwsA(isA<BoxesNotLoadedException>()),
       );
     });
@@ -103,30 +111,28 @@ void _testOpenBox() {
     test('throws an exception if the box is not found', () async {
       _hiveService.cachedBoxesNames = ['test'];
       expectLater(
-        () async => await _hiveService.openBox('i_do_not_exist'),
+        () async => await _hiveService.getHiveBox('i_do_not_exist'),
         throwsA(isA<BoxNotFoundException>()),
       );
     });
 
-    test('can open a hive box', () async {
-      await _hiveService.fetchBoxes(Directory(p.join(_assetsPath, 'boxes')));
+    test("returns a HiveBox containing the box's data", () async {
+      final boxesDirectory = Directory(p.join(_assetsPath, 'boxes'));
+      await _hiveService.fetchBoxes(boxesDirectory);
 
-      final box = await _hiveService.openBox('cats');
-      expect(box, isA<Box>());
+      final box = await _hiveService.getHiveBox('cats');
+      expect(box.name, 'cats');
+      expect(box.size, 2);
+
+      // Testing content
+      final firstItem = box.items[0];
+      expect(firstItem.name, 'fluffy');
+      expect(firstItem.values['name'], 'Fluffy');
+      expect(firstItem.values['age'], 4);
+
+      final secondItem = box.items[1];
+      expect(secondItem.values['name'], 'Loki');
+      expect(secondItem.values['age'], 2);
     });
-
-    group(
-      'encrypted boxes',
-      () {
-        test('can open an encrypted hive box', () {
-          expect(false, isTrue);
-        });
-
-        test('throws an exception if encryption key is incorrect', () {
-          expect(false, isTrue);
-        });
-      },
-      skip: true,
-    );
   });
 }
