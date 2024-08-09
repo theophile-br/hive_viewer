@@ -46,3 +46,9 @@ app.*.map.json
 
 # FVM Version Cache
 .fvm/
+
+# Custom ignores
+/test/services/hive_service/test_cache/cats.hive
+/test/services/hive_service/test_cache/cats.lock
+/test/services/hive_service/test_cache/dogs.hive
+/test/services/hive_service/test_cache/dogsjsonstringify.hive
