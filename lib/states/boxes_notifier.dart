@@ -17,4 +17,23 @@ class BoxesNotifier extends ValueNotifier<BoxesState> {
     await _hiveService.fetchBoxes(directory);
     value = value.copyWith(boxesNames: _hiveService.boxesNames);
   }
+
+  Future<void> loadBox(String name) async {
+    final boxesNames = value.boxesNames;
+
+    if (boxesNames == null) {
+      throw BoxesNotLoadedException();
+    }
+
+    if (!boxesNames.contains(name)) {
+      throw BoxNotFoundException();
+    }
+
+    value = value.copyWith(
+      loadedBoxes: [
+        ...value.loadedBoxes ?? [],
+        await _hiveService.getHiveBox(name),
+      ],
+    );
+  }
 }
