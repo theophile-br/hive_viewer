@@ -136,7 +136,7 @@ void _testLoadBox() {
 
     test('does not store more than 10 elements in cache', () async {
       final boxes = List.generate(
-        10,
+        11,
         (index) => HiveBox(
           name: '$index',
           size: 0,
@@ -144,25 +144,25 @@ void _testLoadBox() {
         ),
       );
       when(() => _hiveService.boxesNames)
-          .thenReturn([...boxes.map((e) => e.name), '10']);
+          .thenReturn(boxes.map((e) => e.name).toList());
       when(() => _hiveService.fetchBoxes(any())).thenAnswer((_) async {});
 
       await _boxesNotifier.loadBoxesFolder('');
-      for (final box in boxes) {
+      for (final box in boxes.take(10)) {
         when(() => _hiveService.getHiveBox(box.name))
             .thenAnswer((_) async => box);
         await _boxesNotifier.loadBox(box.name);
       }
 
-      when(() => _hiveService.getHiveBox('10')).thenAnswer(
-        (_) async => HiveBox(name: '10', size: 0, items: []),
+      when(() => _hiveService.getHiveBox(boxes.last.name)).thenAnswer(
+        (_) async => boxes.last,
       );
-      await _boxesNotifier.loadBox('10');
+      await _boxesNotifier.loadBox(boxes.last.name);
 
       final loadedBoxes = _boxesNotifier.value.loadedBoxes!;
       expect(loadedBoxes.length, 10);
-      expect(loadedBoxes.first.name, '1');
-      expect(loadedBoxes.last.name, '10');
+      expect(loadedBoxes.first, boxes[1]);
+      expect(loadedBoxes.last, boxes.last);
       verify(() => _hiveService.getHiveBox(any())).called(11);
     });
   });
