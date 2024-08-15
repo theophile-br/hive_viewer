@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:hive_viewer/hive_box.dart';
 import 'package:hive_viewer/services/hive_service.dart';
 import 'package:hive_viewer/states/boxes_state.dart';
 
@@ -29,11 +30,20 @@ class BoxesNotifier extends ValueNotifier<BoxesState> {
       throw BoxNotFoundException();
     }
 
+    Set<HiveBox> loadedBoxes = value.loadedBoxes ?? {};
+    if (loadedBoxes.any((box) => box.name == name)) {
+      return;
+    }
+
+    if (loadedBoxes.length == 10) {
+      loadedBoxes = loadedBoxes.toList().sublist(1, 10).toSet();
+    }
+
     value = value.copyWith(
-      loadedBoxes: [
-        ...value.loadedBoxes ?? [],
+      loadedBoxes: {
+        ...loadedBoxes,
         await _hiveService.getHiveBox(name),
-      ],
+      },
     );
   }
 }

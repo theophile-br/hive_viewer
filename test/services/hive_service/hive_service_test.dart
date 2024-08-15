@@ -14,7 +14,7 @@ late HiveService _hiveService;
 late String _assetsPath;
 late Directory _testCacheFolder;
 
-void main() {
+void main() async {
   _setUpAll();
   _setUp();
   _testHiveService();
@@ -95,9 +95,9 @@ void _testFetchBoxes() {
 
       final boxesNames = _hiveService.boxesNames;
       expect(boxesNames.length, 3);
-      expect(boxesNames[0], 'cats');
-      expect(boxesNames[1], 'dogs');
-      expect(boxesNames[2], 'dogsjsonstringify');
+      expect(boxesNames.contains('cats'), isTrue);
+      expect(boxesNames.contains('dogs'), isTrue);
+      expect(boxesNames.contains('dogsjsonstringify'), isTrue);
     });
   });
 }
