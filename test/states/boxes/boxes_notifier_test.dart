@@ -3,16 +3,18 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_viewer/hive_box.dart';
 import 'package:hive_viewer/hive_item.dart';
+import 'package:hive_viewer/services/app_service.dart';
 import 'package:hive_viewer/services/hive_service.dart';
-import 'package:hive_viewer/states/boxes_notifier.dart';
+import 'package:hive_viewer/states/boxes/boxes_notifier.dart';
 import 'package:mocktail/mocktail.dart';
+
+class MockAppService extends Mock implements AppService {}
 
 class MockHiveService extends Mock implements HiveService {}
 
-// Mocks
+late AppService _appService;
 late HiveService _hiveService;
 
-// Variables
 late BoxesNotifier _boxesNotifier;
 
 void main() {
@@ -39,23 +41,53 @@ void _setUp() {
 }
 
 void _setUpMocks() {
+  _appService = MockAppService();
   _hiveService = MockHiveService();
+
+  _stubMocks();
+}
+
+void _stubMocks() {
+  when(() => _appService.saveBoxesPath(any())).thenAnswer((_) async {});
+  when(() => _hiveService.fetchBoxes(any())).thenAnswer((_) async {});
+  when(() => _appService.getBoxesPath()).thenReturn('');
 }
 
 void _setUpVariables() {
-  _boxesNotifier = BoxesNotifier(hiveService: _hiveService);
+  _boxesNotifier = BoxesNotifier(
+    appService: _appService,
+    hiveService: _hiveService,
+  );
 }
 
 void _testBoxesNotifier() {
+  _testLoadBoxesFolder();
   _testLoadBoxes();
   _testLoadBox();
+}
+
+void _testLoadBoxesFolder() {
+  group('loadBoxesFolder(_)', () {
+    test('saves the boxes names (in state) and the path (in state and service)',
+        () async {
+      when(() => _appService.getBoxesPath()).thenReturn('path');
+      when(() => _hiveService.boxesNames).thenReturn(['1', '2']);
+
+      await _boxesNotifier.loadBoxesFolder('path');
+
+      verify(() => _hiveService.fetchBoxes(any())).called(1);
+      expect(_boxesNotifier.value.boxesNames, ['1', '2']);
+
+      verify(() => _appService.saveBoxesPath('path')).called(1);
+      expect(_boxesNotifier.value.boxesPath, 'path');
+    });
+  });
 }
 
 void _testLoadBoxes() {
   group('loadBoxes()', () {
     test('saves the boxes name in the state', () async {
       when(() => _hiveService.boxesNames).thenReturn(['cats', 'dogs', 'test']);
-      when(() => _hiveService.fetchBoxes(any())).thenAnswer((_) async {});
 
       await _boxesNotifier.loadBoxesFolder('');
 
@@ -78,7 +110,6 @@ void _testLoadBox() {
 
     test('throws an exception if the box is missing', () async {
       when(() => _hiveService.boxesNames).thenReturn(['cats', 'dogs', 'test']);
-      when(() => _hiveService.fetchBoxes(any())).thenAnswer((_) async {});
 
       await _boxesNotifier.loadBoxesFolder('');
 
@@ -97,7 +128,6 @@ void _testLoadBox() {
         ],
       );
       when(() => _hiveService.boxesNames).thenReturn(['cats']);
-      when(() => _hiveService.fetchBoxes(any())).thenAnswer((_) async {});
       when(() => _hiveService.getHiveBox(any())).thenAnswer(
         (_) async => hiveBox,
       );
@@ -119,7 +149,6 @@ void _testLoadBox() {
         ],
       );
       when(() => _hiveService.boxesNames).thenReturn(['cats']);
-      when(() => _hiveService.fetchBoxes(any())).thenAnswer((_) async {});
       when(() => _hiveService.getHiveBox(any())).thenAnswer(
         (_) async => hiveBox,
       );
@@ -145,7 +174,6 @@ void _testLoadBox() {
       );
       when(() => _hiveService.boxesNames)
           .thenReturn(boxes.map((e) => e.name).toList());
-      when(() => _hiveService.fetchBoxes(any())).thenAnswer((_) async {});
 
       await _boxesNotifier.loadBoxesFolder('');
       for (final box in boxes.take(10)) {

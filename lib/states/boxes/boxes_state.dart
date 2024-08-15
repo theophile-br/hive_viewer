@@ -6,6 +6,7 @@ part 'boxes_state.freezed.dart';
 @freezed
 class BoxesState with _$BoxesState {
   const factory BoxesState({
+    String? boxesPath,
     List<String>? boxesNames,
     Set<HiveBox>? loadedBoxes,
   }) = _BoxesState;

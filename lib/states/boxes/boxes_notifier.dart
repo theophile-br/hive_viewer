@@ -2,21 +2,35 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:hive_viewer/hive_box.dart';
+import 'package:hive_viewer/services/app_service.dart';
 import 'package:hive_viewer/services/hive_service.dart';
-import 'package:hive_viewer/states/boxes_state.dart';
+import 'package:hive_viewer/states/boxes/boxes_state.dart';
 
 class BoxesNotifier extends ValueNotifier<BoxesState> {
+  final AppService _appService;
   final HiveService _hiveService;
 
-  BoxesNotifier({required HiveService hiveService})
-      : _hiveService = hiveService,
+  BoxesNotifier({
+    required AppService appService,
+    required HiveService hiveService,
+  })  : _appService = appService,
+        _hiveService = hiveService,
         super(const BoxesState());
+
+  Future<void> init() async {}
+
+  Future<void> reloadBoxes() async {}
 
   Future<void> loadBoxesFolder(String path) async {
     final directory = Directory(path);
 
     await _hiveService.fetchBoxes(directory);
-    value = value.copyWith(boxesNames: _hiveService.boxesNames);
+    await _appService.saveBoxesPath(directory.path);
+
+    value = value.copyWith(
+      boxesNames: _hiveService.boxesNames,
+      boxesPath: _appService.getBoxesPath(),
+    );
   }
 
   Future<void> loadBox(String name) async {
