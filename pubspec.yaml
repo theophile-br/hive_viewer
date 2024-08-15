@@ -39,10 +39,12 @@ dependencies:
   hive: ^2.2.3
   provider: ^6.0.5
   file_picker: ^8.0.3
-  shared_preferences: ^2.0.20
+  shared_preferences: ^2.3.1
   path_provider: ^2.0.14
   package_info_plus: ^8.0.0
   path: ^1.9.0
+  freezed_annotation: ^2.4.4
+  mocktail: ^1.0.4
 
 dev_dependencies:
   flutter_test:
@@ -54,6 +56,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^4.0.0
+  build_runner: ^2.4.11
+  freezed: ^2.5.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
