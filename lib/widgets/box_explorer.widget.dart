@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hive_viewer/services/app.service.dart';
-import 'package:hive_viewer/services/hive.service.dart';
+import 'package:hive_viewer/ui/app_view_model.dart';
+import 'package:hive_viewer/ui/hive_controller.dart';
 import 'package:provider/provider.dart';
 
 import '../json_viewer.dart';
@@ -10,23 +10,21 @@ class BoxExplorerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final datas = context.select(
-      (HiveService value) => value.filteredCurrentData,
+    final data = context.select(
+      (AppViewModel value) => value.data,
     );
 
     final currentDataCount = context.select(
-      (HiveService value) => value.currentDataCount,
-    );
-
-    final filteredCurrentDataCount = context.select(
-      (HiveService value) => value.filteredCurrentDataCount,
+      (AppViewModel value) => value.totalDataCount,
     );
 
     final currentBoxName = context.select(
-      (HiveService value) => value.currentCollectionName,
+      (AppViewModel value) => value.selectedBoxName,
     );
 
-    final version = context.read<AppService>().packageInfo.version;
+    final version = context.select(
+      (AppViewModel value) => value.appVersion,
+    );
 
     return Expanded(
       child: Column(
@@ -43,12 +41,6 @@ class BoxExplorerWidget extends StatelessWidget {
               ),
             ],
           ),
-          // Row(
-          //   children: [
-          //     Text("<input field>"),
-          //     ElevatedButton(onPressed: () => null, child: Text("Apply"))
-          //   ],
-          // ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -79,14 +71,14 @@ class BoxExplorerWidget extends StatelessWidget {
                     style:
                         const TextStyle(color: Color.fromRGBO(33, 42, 62, 1)),
                   ),
-                  if (filteredCurrentDataCount != 0) ...[
+                  if (currentDataCount != 0) ...[
                     const Text(
                       "( ",
                       style:
                           const TextStyle(color: Color.fromRGBO(33, 42, 62, 1)),
                     ),
                     Text(
-                      filteredCurrentDataCount.toString(),
+                      currentDataCount.toString(),
                       style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Color.fromRGBO(33, 42, 62, 1)),
@@ -106,7 +98,7 @@ class BoxExplorerWidget extends StatelessWidget {
                         // primary: Color.fromRGBO(33, 42, 62, 1),
                         ),
                     onPressed: () =>
-                        context.read<HiveService>().refreshCollection(),
+                        context.read<HiveController>().onRefreshDatabase(),
                     child: Row(
                       children: const [
                         Icon(
@@ -120,7 +112,10 @@ class BoxExplorerWidget extends StatelessWidget {
           ),
           TextField(
             onChanged: (text) {
-              context.read<HiveService>().dataFiltering(text);
+              context.read<HiveController>().onBoxDataLoad(
+                    boxId: currentBoxName,
+                    filter: text,
+                  );
             },
             style: const TextStyle(
                 fontWeight: FontWeight.bold,
@@ -136,7 +131,7 @@ class BoxExplorerWidget extends StatelessWidget {
               child: ListView.separated(
                 separatorBuilder: (context, index) => Divider(height: 1),
                 shrinkWrap: true,
-                itemCount: datas.entries.length,
+                itemCount: data.entries.length,
                 itemBuilder: (context, index) => Container(
                   padding: EdgeInsets.all(10),
                   // decoration: BoxDecoration(
@@ -152,7 +147,7 @@ class BoxExplorerWidget extends StatelessWidget {
                   //   ],
                   // ),
                   child: JsonViewer(Map.fromEntries({
-                    datas.entries.elementAt(index),
+                    data.entries.elementAt(index),
                   })),
                 ),
               ),

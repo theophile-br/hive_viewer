@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:hive_viewer/services/hive.service.dart';
+import 'package:hive_viewer/ui/app_view_model.dart';
+import 'package:hive_viewer/ui/hive_controller.dart';
 import 'package:provider/provider.dart';
 
 class SideSheetWidget extends StatelessWidget {
@@ -9,7 +10,7 @@ class SideSheetWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<String> boxesName = context.select(
-      (HiveService value) => value.filteredBoxesName,
+      (AppViewModel value) => value.boxesName,
     );
 
     return Container(
@@ -24,17 +25,17 @@ class SideSheetWidget extends StatelessWidget {
                   onPressed: () async {
                     String? selectedDirectory =
                         await FilePicker.platform.getDirectoryPath();
-                    if (selectedDirectory != null) {
-                      context.read<HiveService>().load(selectedDirectory);
+                    if (selectedDirectory != null && context.mounted) {
+                      context.read<HiveController>().onInitDatabase(selectedDirectory);
                     }
                   },
                   icon: const Icon(
                     Icons.folder,
                   )),
               Tooltip(
-                message: context.read<HiveService>().databasePath,
+                message: context.read<AppViewModel>().databasePath,
                 child: Text(
-                  '...${context.read<HiveService>().databasePath.substring(context.read<HiveService>().databasePath.length - 20, context.read<HiveService>().databasePath.length)}',
+                  context.read<AppViewModel>().databasePathForDisplay,
                   style:
                       const TextStyle(color: Color.fromRGBO(241, 246, 249, 1)),
                 ),
@@ -46,7 +47,8 @@ class SideSheetWidget extends StatelessWidget {
               IconButton(
                 color: Color.fromRGBO(241, 246, 249, 1),
                 icon: const Icon(Icons.refresh),
-                onPressed: () => context.read<HiveService>().refreshDirectory(),
+                onPressed: () =>
+                    context.read<HiveController>().onRefreshDatabase(),
               ),
               Row(
                 children: [
@@ -65,7 +67,7 @@ class SideSheetWidget extends StatelessWidget {
           ),
           TextField(
             onChanged: (text) {
-              context.read<HiveService>().boxFiltering(text);
+              context.read<HiveController>().onBoxLoad(filter: text);
             },
             style: const TextStyle(
                 fontWeight: FontWeight.bold,
@@ -94,7 +96,9 @@ class SideSheetWidget extends StatelessWidget {
                                 fontWeight: FontWeight.bold,
                                 color: Color.fromRGBO(241, 246, 249, 1))),
                       ),
-                      onTap: () => context.read<HiveService>().getAll(item),
+                      onTap: () => context
+                          .read<HiveController>()
+                          .onBoxDataLoad(boxId: item),
                     ),
                   );
                 },

@@ -26,5 +26,8 @@ class HiveDataTest {
     final dogJSONStringifyBox = await Hive.openBox("dogsjsonstringify");
     dogJSONStringifyBox.clear();
     data["dogsjsonstringify"]!.forEach((key, value) async { await dogJSONStringifyBox.put(key, value);});
+    final encryptedCatsBox = await Hive.openBox("encryptedCatsBox",encryptionCipher: HiveAesCipher(base64Url.decode("test")));
+    data["cats"]!.forEach((key, value) async { await encryptedCatsBox.put(key, value);});
+    encryptedCatsBox.clear();
   }
 }
