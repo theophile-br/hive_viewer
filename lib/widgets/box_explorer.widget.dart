@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive_viewer/ui/app_view_model.dart';
 import 'package:hive_viewer/ui/hive_controller.dart';
 import 'package:provider/provider.dart';
@@ -146,9 +149,44 @@ class BoxExplorerWidget extends StatelessWidget {
                   //     ),
                   //   ],
                   // ),
-                  child: JsonViewer(Map.fromEntries({
-                    data.entries.elementAt(index),
-                  })),
+                  child: Stack(
+                    children: [
+                      Container(
+                        alignment: Alignment.topRight,
+                        child: IconButton(
+                          icon: const Icon(Icons.copy),
+                          onPressed: () async {
+                            try {
+                              await Clipboard.setData(
+                                ClipboardData(
+                                  text: jsonEncode({
+                                    data.entries.elementAt(index).key:
+                                        data.entries.elementAt(index).value,
+                                  }),
+                                ),
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Copied to Clipboard!'),
+                                  duration: Duration(seconds: 1),
+                                ),
+                              );
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Failed to copy to clipboard.'),
+                                  duration: Duration(seconds: 1),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                      JsonViewer(Map.fromEntries({
+                        data.entries.elementAt(index),
+                      })),
+                    ],
+                  ),
                 ),
               ),
             ),
