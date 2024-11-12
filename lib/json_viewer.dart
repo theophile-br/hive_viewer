@@ -1,9 +1,11 @@
 library flutter_json_widget;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class JsonViewer extends StatefulWidget {
   final dynamic jsonObj;
+
   const JsonViewer(
     this.jsonObj, {
     super.key,
@@ -160,47 +162,74 @@ class JsonObjectViewerState extends State<JsonObjectViewer> {
     return true;
   }
 
+  GestureDetector getTextThatCanBeCopied(String content, {TextStyle? style}) {
+    return GestureDetector(
+      onDoubleTap: () async {
+        try {
+          await Clipboard.setData(ClipboardData(text: content));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Copied to Clipboard!'),
+              duration: Duration(seconds: 1),
+            ),
+          );
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to copy to clipboard.'),
+              duration: Duration(seconds: 1),
+            ),
+          );
+        }
+      },
+      child: Text(
+        '"$content"',
+        style: style,
+      ),
+    );
+  }
+
   getValueWidget(MapEntry entry) {
     if (entry.value == null) {
-      return const Expanded(
-        child: Text(
+      return Expanded(
+        child: getTextThatCanBeCopied(
           'undefined',
           style: TextStyle(color: Colors.grey),
         ),
       );
     } else if (entry.value is int) {
       return Expanded(
-        child: Text(
+        child: getTextThatCanBeCopied(
           entry.value.toString(),
           style: const TextStyle(color: Colors.teal),
         ),
       );
     } else if (entry.value is String) {
       return Expanded(
-        child: Text(
+        child: getTextThatCanBeCopied(
           '"${entry.value}"',
           style: const TextStyle(color: Colors.redAccent),
         ),
       );
     } else if (entry.value is bool) {
       return Expanded(
-        child: Text(
+        child: getTextThatCanBeCopied(
           entry.value.toString(),
           style: const TextStyle(color: Colors.purple),
         ),
       );
     } else if (entry.value is double) {
       return Expanded(
-        child: Text(
+        child: getTextThatCanBeCopied(
           entry.value.toString(),
           style: const TextStyle(color: Colors.teal),
         ),
       );
     } else if (entry.value is List) {
       if (entry.value.isEmpty) {
-        return const Text(
+        return getTextThatCanBeCopied(
           'Array[0]',
-          style: TextStyle(color: Colors.grey),
+          style: const TextStyle(color: Colors.grey),
         );
       } else {
         return InkWell(
