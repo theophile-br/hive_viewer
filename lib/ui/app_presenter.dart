@@ -1,3 +1,4 @@
+import 'package:hive_viewer/domain/types/result_page.dart';
 import 'package:hive_viewer/ui/app_view_model.dart';
 
 class AppPresenter {
@@ -6,6 +7,7 @@ class AppPresenter {
   AppPresenter(this.appViewModel);
 
   void present({
+    ResultPage? page,
     List<String>? boxesName,
     String? selectedBoxName,
     int? totalBoxesCount,
@@ -17,6 +19,7 @@ class AppPresenter {
     String? appVersion,
   }) {
     appViewModel.updateAppViewModel(
+      page: page,
       boxesName: boxesName,
       currentData: currentData,
       selectedBoxName: selectedBoxName,

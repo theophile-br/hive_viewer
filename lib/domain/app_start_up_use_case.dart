@@ -18,8 +18,8 @@ class AppStartUpUseCase {
   Future<void> execute() async {
     final appVersion = appConfigRepository.findVersion();
     appPresenter.present(appVersion: appVersion);
-    // final appDataBase = appConfigRepository.findDatabasePath();
-    final appDatabase = p.join("test_resources", "hive_data");
-    await initializeDatabaseUseCase.execute(appDatabase);
+    String? appDataBase = await appConfigRepository.findDatabasePath();
+    appDataBase ??= p.join("test_resources", "hive_data");
+    await initializeDatabaseUseCase.execute(appDataBase);
   }
 }
