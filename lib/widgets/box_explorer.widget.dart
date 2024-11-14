@@ -129,71 +129,67 @@ class BoxExplorerWidget extends StatelessWidget {
                 prefixIcon: Icon(Icons.search)),
           ),
           const Divider(color: Color.fromRGBO(33, 42, 62, 0.5)),
-          Stack(
-            children: [
-              Container(
-                child: SingleChildScrollView(
-                  child: ListView.separated(
-                    separatorBuilder: (context, index) => Divider(height: 1),
-                    shrinkWrap: true,
-                    itemCount: data.entries.length,
-                    itemBuilder: (context, index) => Container(
-                      padding: EdgeInsets.all(10),
-                      // decoration: BoxDecoration(
-                      //   color: Colors.white,
-                      //   borderRadius: const BorderRadius.all(Radius.circular(3)),
-                      //   boxShadow: [
-                      //     BoxShadow(
-                      //       color: Colors.grey.withOpacity(0.5),
-                      //       spreadRadius: 5,
-                      //       blurRadius: 7,
-                      //       offset: Offset(0, 3), // changes position of shadow
-                      //     ),
-                      //   ],
-                      // ),
-                      child: Stack(
-                        children: [
-                          Container(
-                            alignment: Alignment.topRight,
-                            child: IconButton(
-                              icon: const Icon(Icons.copy),
-                              onPressed: () async {
-                                try {
-                                  await Clipboard.setData(
-                                    ClipboardData(
-                                      text: jsonEncode({
-                                        data.entries.elementAt(index).key:
-                                            data.entries.elementAt(index).value,
-                                      }),
-                                    ),
-                                  );
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Copied to Clipboard!'),
-                                      duration: Duration(seconds: 1),
-                                    ),
-                                  );
-                                } catch (e) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Failed to copy to clipboard.'),
-                                      duration: Duration(seconds: 1),
-                                    ),
-                                  );
-                                }
-                              },
-                            ),
-                          ),
-                          JsonViewer(Map.fromEntries({
-                            data.entries.elementAt(index),
-                          })),
-                        ],
+          Expanded(
+            child: SingleChildScrollView(
+              child: ListView.separated(
+                separatorBuilder: (context, index) => Divider(height: 1),
+                shrinkWrap: true,
+                itemCount: data.entries.length,
+                itemBuilder: (context, index) => Container(
+                  padding: EdgeInsets.all(10),
+                  // decoration: BoxDecoration(
+                  //   color: Colors.white,
+                  //   borderRadius: const BorderRadius.all(Radius.circular(3)),
+                  //   boxShadow: [
+                  //     BoxShadow(
+                  //       color: Colors.grey.withOpacity(0.5),
+                  //       spreadRadius: 5,
+                  //       blurRadius: 7,
+                  //       offset: Offset(0, 3), // changes position of shadow
+                  //     ),
+                  //   ],
+                  // ),
+                  child: Stack(
+                    children: [
+                      Container(
+                        alignment: Alignment.topRight,
+                        child: IconButton(
+                          icon: const Icon(Icons.copy),
+                          onPressed: () async {
+                            try {
+                              await Clipboard.setData(
+                                ClipboardData(
+                                  text: jsonEncode({
+                                    data.entries.elementAt(index).key:
+                                        data.entries.elementAt(index).value,
+                                  }),
+                                ),
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Copied to Clipboard!'),
+                                  duration: Duration(seconds: 1),
+                                ),
+                              );
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Failed to copy to clipboard.'),
+                                  duration: Duration(seconds: 1),
+                                ),
+                              );
+                            }
+                          },
+                        ),
                       ),
-                    ),
+                      JsonViewer(Map.fromEntries({
+                        data.entries.elementAt(index),
+                      })),
+                    ],
                   ),
                 ),
               ),
-            ],
+            ),
           ),
         ],
       ),
